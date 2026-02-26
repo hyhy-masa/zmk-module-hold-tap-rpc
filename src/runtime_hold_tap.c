@@ -221,7 +221,7 @@ static int runtime_hold_tap_init(void) {
     return 0;
 }
 
-SYS_INIT(runtime_hold_tap_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+SYS_INIT(runtime_hold_tap_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 
 #else /* NUM_HT_INSTANCES == 0 */
 
