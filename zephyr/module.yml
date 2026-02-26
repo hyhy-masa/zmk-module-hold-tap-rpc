@@ -1,0 +1,4 @@
+name: zmk-module-hold-tap-rpc
+build:
+  cmake: .
+  kconfig: Kconfig

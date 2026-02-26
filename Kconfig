@@ -1,0 +1,11 @@
+config ZMK_RUNTIME_HOLD_TAP
+    bool "Enable runtime hold-tap configuration"
+
+if ZMK_RUNTIME_HOLD_TAP
+
+config ZMK_RUNTIME_HOLD_TAP_STUDIO_RPC
+    bool "Enable hold-tap custom Studio RPC"
+    default y
+    depends on ZMK_STUDIO
+
+endif

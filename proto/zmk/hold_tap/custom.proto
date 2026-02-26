@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package zmk.hold_tap;
+
+message HoldTapInfo {
+    uint32 id = 1;
+    string name = 2;
+    uint32 tapping_term_ms = 3;
+    uint32 quick_tap_ms = 4;
+    uint32 require_prior_idle_ms = 5;
+    uint32 flavor = 6;
+    uint32 default_tapping_term_ms = 7;
+    uint32 default_quick_tap_ms = 8;
+    uint32 default_require_prior_idle_ms = 9;
+    uint32 default_flavor = 10;
+}
+
+message ListHoldTapsRequest {}
+message ListHoldTapsResponse { repeated HoldTapInfo hold_taps = 1; }
+
+message SetTappingTermRequest { uint32 id = 1; uint32 value = 2; }
+message SetQuickTapRequest { uint32 id = 1; uint32 value = 2; }
+message SetRequirePriorIdleRequest { uint32 id = 1; uint32 value = 2; }
+message SetFlavorRequest { uint32 id = 1; uint32 value = 2; }
+message ResetHoldTapRequest { uint32 id = 1; }
+
+message SetResponse { bool success = 1; }
+
+message Request {
+    oneof request_type {
+        ListHoldTapsRequest list_hold_taps = 1;
+        SetTappingTermRequest set_tapping_term = 2;
+        SetQuickTapRequest set_quick_tap = 3;
+        SetRequirePriorIdleRequest set_require_prior_idle = 4;
+        SetFlavorRequest set_flavor = 5;
+        ResetHoldTapRequest reset_hold_tap = 6;
+    }
+}
+
+message ErrorResponse { string message = 1; }
+
+message Response {
+    oneof response_type {
+        ErrorResponse error = 1;
+        ListHoldTapsResponse list_hold_taps = 2;
+        SetResponse set_tapping_term = 3;
+        SetResponse set_quick_tap = 4;
+        SetResponse set_require_prior_idle = 5;
+        SetResponse set_flavor = 6;
+        SetResponse reset_hold_tap = 7;
+    }
+}
+
+message Notification {
+    oneof notification_type {
+        HoldTapInfo hold_tap_changed = 1;
+    }
+}
