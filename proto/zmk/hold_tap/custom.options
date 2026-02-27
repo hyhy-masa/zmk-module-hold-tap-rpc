@@ -1,3 +1,3 @@
-zmk.hold_tap.ErrorResponse.message       max_size:64
-zmk.hold_tap.HoldTapInfo.name            max_size:32
-zmk.hold_tap.ListHoldTapsResponse.hold_taps  max_count:10
+zmk.hold_tap.ErrorResponse.message       max_size:32
+zmk.hold_tap.HoldTapInfo.name            max_size:20
+zmk.hold_tap.ListHoldTapsResponse.hold_taps  max_count:4
