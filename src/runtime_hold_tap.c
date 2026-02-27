@@ -5,6 +5,7 @@
  */
 
 #include <zmk/runtime_hold_tap.h>
+#include <zephyr/init.h>
 #include <zephyr/settings/settings.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/devicetree.h>
@@ -221,7 +222,7 @@ static int runtime_hold_tap_init(void) {
     return 0;
 }
 
-SYS_INIT(runtime_hold_tap_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+SYS_INIT(runtime_hold_tap_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 
 #else /* NUM_HT_INSTANCES == 0 */
 
