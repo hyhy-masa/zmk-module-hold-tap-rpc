@@ -9,8 +9,31 @@
 #include <zmk/runtime_hold_tap.h>
 
 #include <zephyr/logging/log.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/sys/util.h>
 #include <string.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
+/*
+ * 一覧応答が運べる件数（proto/zmk/hold_tap/custom.options の max_count）。
+ *
+ * ここが device tree の hold-tap インスタンス数より少ないと、handle_list_hold_taps
+ * のループが溢れた分を「黙って」捨てる。アプリ側にはエラーも警告も出ないため、
+ * 「項目が増えない」という形でしか気づけない。実際に max_count:4 のまま
+ * インスタンスを5つにして、5件目（lt_scroll）が消えた。
+ *
+ * 静かに捨てるのをやめ、足りなければビルドを落とす。
+ */
+#define HT_RPC_CAPACITY                                                                            \
+    (sizeof(((zmk_hold_tap_ListHoldTapsResponse *)0)->hold_taps) /                                 \
+     sizeof(((zmk_hold_tap_ListHoldTapsResponse *)0)->hold_taps[0]))
+
+#if DT_HAS_COMPAT_STATUS_OKAY(zmk_behavior_hold_tap)
+BUILD_ASSERT(DT_NUM_INST_STATUS_OKAY(zmk_behavior_hold_tap) <= HT_RPC_CAPACITY,
+             "hold-tap のインスタンス数が RPC の容量を超えている。"
+             "proto/zmk/hold_tap/custom.options の "
+             "ListHoldTapsResponse.hold_taps max_count を上げること。");
+#endif
 
 static struct zmk_rpc_custom_subsystem_meta hold_tap_meta = {
     ZMK_RPC_CUSTOM_SUBSYSTEM_UI_URLS("http://localhost:5173"),
@@ -105,7 +128,7 @@ static int handle_list_hold_taps(zmk_hold_tap_Response *resp) {
     zmk_hold_tap_ListHoldTapsResponse result = zmk_hold_tap_ListHoldTapsResponse_init_zero;
     result.hold_taps_count = 0;
 
-    for (int i = 0; i < count && i < ARRAY_SIZE(result.hold_taps); i++) {
+    for (int i = 0; i < count && i < HT_RPC_CAPACITY; i++) {
         struct runtime_hold_tap_info info;
         if (zmk_runtime_hold_tap_get_info(i, &info) == 0) {
             fill_hold_tap_info(&result.hold_taps[result.hold_taps_count], &info);
